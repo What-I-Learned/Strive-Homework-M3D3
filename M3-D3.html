@@ -195,8 +195,18 @@
             them in a cool way!
           </p>
           <p>
-            <a href="#" class="btn btn-primary my-2">Load Images</a>
-            <a href="#" class="btn btn-secondary my-2">Load Secondary Images</a>
+            <a
+              href="#"
+              class="btn btn-primary my-2"
+              onclick="loadImages('Nature')"
+              >Load Images</a
+            >
+            <a
+              href="#"
+              class="btn btn-secondary my-2"
+              onclick="loadImages('Beach')"
+              >Load Secondary Images</a
+            >
           </p>
         </div>
       </section>
@@ -646,5 +656,81 @@
       integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns"
       crossorigin="anonymous"
     ></script>
+
+    <script>
+      // window.onload = () => {
+      //   fetch("https://striveschool-api.herokuapp.com/books")
+      //     .then((response) => response.json())
+      //     .then((books) => {
+      //       bookList = books;
+      //       displayBooks(books);
+      //     });
+      // };
+
+      // 1) When pressing on Load Images button, load the pictures from https://api.pexels.com/v1/search?query=[your-query]
+
+      let primaryImgList = [];
+
+      function loadImages(query) {
+        fetch(`api.pexels.com/v1/search?query=${query}`, {
+          method: "GET",
+          headers: {
+            Authorization:
+              "Bearer 563492ad6f91700001000001c383cdcb9b7b442f9fd2db7ef89dbbcf",
+          },
+        })
+          .then((response) => response.json())
+          .then((images) => {
+            primaryImgList = images.photos;
+            displayImages(primaryImgList);
+            primaryImgList.forEach((element) => {
+              console.log(element);
+            });
+            console.log(primaryImgList);
+          })
+          .catch((err) => console.error(err));
+      }
+
+      function displayImages(images) {
+        const row = document.querySelector(".row");
+
+        row.innerHTML = images
+          .map(
+            (image) =>
+              `<div class="col-md-4">
+                    <div class="card mb-4 shadow-sm">
+                      <img src ="${image.url}" class="card-img-top" alt="...">
+                      <div class="card-body">
+                        <p class="card-text">
+                          This is a wider card with supporting text below as a natural
+                          lead-in to additional content. This content is a little bit
+                          longer.
+                        </p>
+                        <div
+                          class="d-flex justify-content-between align-items-center"
+                        >
+                          <div class="btn-group">
+                            <button
+                              type="button"
+                              class="btn btn-sm btn-outline-secondary"
+                            >
+                              View
+                            </button>
+                            <button
+                              type="button"
+                              class="btn btn-sm btn-outline-secondary"
+                            >
+                              Edit
+                            </button>
+                          </div>
+                          <small class="text-muted">${image.id}</small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>`
+          )
+          .join("");
+      }
+    </script>
   </body>
 </html>
