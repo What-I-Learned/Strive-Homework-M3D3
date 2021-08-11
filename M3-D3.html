@@ -219,52 +219,45 @@
 
       <div class="album py-5 bg-light">
         <div class="container">
+          
           <div class="row image-row">
-            <div class="col-md-4">
-              <div class="card mb-4 shadow-sm">
-                <svg
-                  class="bd-placeholder-img card-img-top"
-                  width="100%"
-                  height="225"
-                  xmlns="http://www.w3.org/2000/svg"
-                  preserveAspectRatio="xMidYMid slice"
-                  focusable="false"
-                  role="img"
-                  aria-label="Placeholder: Thumbnail"
-                >
-                  <title>Placeholder</title>
-                  <rect width="100%" height="100%" fill="#55595c" />
-                  <text x="50%" y="50%" fill="#eceeef" dy=".3em">
-                    Thumbnail
-                  </text>
-                </svg>
-                <div class="card-body">
-                  <p class="card-text">
-                    This is a wider card with supporting text below as a natural
-                    lead-in to additional content. This content is a little bit
-                    longer.
-                  </p>
-                  <div
-                    class="d-flex justify-content-between align-items-center"
-                  >
-                    <div class="btn-group">
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-outline-secondary"
-                      >
-                        View
-                      </button>
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-outline-secondary"
-                      >
-                        Edit
-                      </button>
-                    </div>
-                    <small class="text-muted">9 mins</small>
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    ...
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
                   </div>
                 </div>
               </div>
+            </div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+      <div class="container">
+        <div
+          id="carouselExampleSlidesOnly"
+          class="carousel slide"
+          data-ride="carousel"
+        >
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+              <img src="..." class="d-block w-100" alt="..." />
+            </div>
+            <div class="carousel-item">
+              <img src="..." class="d-block w-100" alt="..." />
+            </div>
+            <div class="carousel-item">
+              <img src="..." class="d-block w-100" alt="..." />
             </div>
           </div>
         </div>
@@ -306,6 +299,36 @@
       // 1) When pressing on Load Images button, load the pictures from https://api.pexels.com/v1/search?query=[your-query]
 
       let primaryImgList = [];
+      let carouselImgList = [];
+
+      function loadForestImgs() {
+        fetch(`https://api.pexels.com/v1/search?query=forest`, {
+          method: "GET",
+          headers: {
+            Authorization:
+              "Bearer 563492ad6f91700001000001c383cdcb9b7b442f9fd2db7ef89dbbcf",
+          },
+        })
+          .then((response) => response.json())
+          .then((forestImages) => {
+            carouselImgList = forestImages.photos;
+            displayCarousel(carouselImgList);
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+
+        console.log("images as");
+      }
+
+      function displayCarousel(carouselArray) {
+        const carousel = document.querySelector(".carousel-item");
+        let slicedArray = carouselArray.slice(0, 7);
+        carousel.innerHTML = map(
+          (image, index) =>
+            `<img src="${image.src.medium}" class="d-block w-100" alt="..." />`
+        );
+      }
 
       function loadImages(query) {
         fetch(`https://api.pexels.com/v1/search?query=${query}`, {
@@ -328,8 +351,31 @@
         console.log("images as");
       }
 
+      function setAttributes(el,attrs){
+        for(let key in attrs){
+          el.setAttribute(key, attrs[key]);
+        }
+      }
+
       function displayImages(images) {
         const row = document.querySelector(".image-row");
+      //   const modal = document.createElement("div")
+      //   setAttributes(modal,{"class":"modal fade","style":"display: none;","id":"exampleModal","tabindex":"-1","aria-labelledby":"exampleModalLabel" ,"aria-hidden":"true"})
+      //  modal.innerHTML = `<div class="modal-dialog">
+      //           <div class="modal-content">
+      //             <div class="modal-header">
+      //               <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+      //               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      //             </div>
+      //             <div class="modal-body">
+      //               ...
+      //             </div>
+      //             <div class="modal-footer">
+      //               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      //               <button type="button" class="btn btn-primary">Save changes</button>
+      //             </div>
+      //           </div>
+      //         </div>`
 
         row.innerHTML = "";
 
@@ -338,14 +384,16 @@
             (image) =>
               `<div class="col-md-4">
                     <div class="card mb-4 shadow-sm">
-                      <img src ="${image.src.small}" class="card-img-top">
+                      <div style="height:240px;width:auto;overflow:hidden">
+                      <img src ="${image.src.medium}" class="card-img-top" style="background-size:cover">
+                      </div>
                       <div class="card-body">
                   <p class="card-text">
                     ${image.photographer}
                   </p>
                   <div class="d-flex justify-content-between align-items-center">
                     <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">
+                      <button type="button" data-bs-toggle="modal" class="btn btn-sm btn-outline-secondary">
                         View
                       </button>
                       <button type="button" onclick=hideThis(this.closest(".card")) class="btn btn-sm btn-outline-secondary">
@@ -359,6 +407,30 @@
                   </div>`
           )
           .join("");
+
+          let btns = document.querySelectorAll(".card .btn-group .btn:first-of-type");
+
+btns.forEach(button => {
+  button.addEventListener("click",function(e){
+    let cardImage = e.target.closest(".card").querySelector("img");
+    if (cardImage) {
+          e.target.setAttribute("data-toggle", "modal");
+          e.target.setAttribute("data-target", "#exampleModal");
+
+          let modal = document.querySelector(".modal");
+          let image = document.createElement("img");
+          image.src = cardImage.src;
+
+          image.className = "img-fluid w-100";
+          modal.querySelector(".modal-body").innerText = "";
+          modal.querySelector(".modal-body").appendChild(image);
+        } else {
+          alert("Load images first");
+        }
+  })
+});
+
+          // row.append(modal)
       }
       function hideThis(img) {
         // console.log(img);
@@ -367,25 +439,21 @@
 
       // [EXTRA]
       //   7) After every button is pressed, display an alert for 5 seconds the result of the operation (es.: 20 images loaded)
-      function displayAlert(msg) {
-        let alertEl = document.create("div");
-        alertEl.setAttricutes(
-          "style",
-          "position:absolute;top:40%;left:20%;background-color:white;"
-        );
-        alertEl.innerHTML = msg;
-        setTimeout(function () {
-          el.parentNode.removeChild(el);
-        }, 5000);
-        document.body.appendChild(el);
-      }
-      let btns = document.getElementsByTagName("button");
+      // function displayAlert(msg) {
+      //   let alertEl = document.create("div");
+      //   alertEl.setAttricutes(
+      //     "style",
+      //     "position:absolute;top:40%;left:20%;background-color:white;"
+      //   );
+      //   alertEl.innerHTML = msg;
+      //   setTimeout(function () {
+      //     el.parentNode.removeChild(el);
+      //   }, 5000);
+      //   document.body.appendChild(el);
+      // }
 
-      for (let button of btns) {
-        button.addEventListener("click", function (e) {
-          console.log("helllo");
-        });
-      }
+      //   })
+      // });
       // btns.forEach(
       //   (button) => console.log(button)
       //   // button.addEventListener("click", function () {
@@ -396,6 +464,18 @@
       //   8) Handle API errors gracefully, using alert components with the message inside
       //   9) Add at the bottom of the page a carousel with "forest" images loaded by another API call
       //   10) When the user clicks on the "VIEW" button inside the Card, open the specified image in a modal view
+      
+      window.onload = () => {
+      let btns = document.querySelectorAll(".card .btn-group .btn:first-of-type");
+      console.log(btns);
+
+btns.forEach(button => {
+  console.log(button);
+  button.addEventListener("click",function(e){
+    console.log("hello");
+  })
+});
+      }
     </script>
   </body>
 </html>
